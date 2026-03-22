@@ -7,23 +7,7 @@ import datetime
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", layout="wide", page_icon="📈")
 
-# --- HIDE STREAMLIT BRANDING ---
-#hide_st_style = """
-          #  <style>
-          #  /* Hide only the top-right menu and branding elements */
-          #  [data-testid="stHeaderActionElements"] {display: none !important;}
-         #   #MainMenu {visibility: hidden;}
-            
-          #  /* Hide default footer */
-          #  footer {visibility: hidden !important;}
-            
-          #  /* Hide Viewer Badge (Hosted with Streamlit) */
-           # [data-testid="stViewerBadge"] {display: none !important;}
-         #   [class^="viewerBadge"] {display: none !important;}
-          #  a[href^="https://streamlit.io/cloud"] {display: none !important;}
-         #   </style>
-        #    """
-#st.markdown(hide_st_style, unsafe_allow_html=True)
+
 
 # --- HIDE STREAMLIT BRANDING ---
 hide_st_style = """
