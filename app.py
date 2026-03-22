@@ -42,8 +42,25 @@ lot_size = st.sidebar.number_input("Index Lot Size", value=50, step=1)
 target_delta = st.sidebar.number_input("Target Put Delta", value=0.5, step=0.05, help="0.5 represents an At-The-Money (ATM) Put.")
 
 # --- MAIN PAGE: HEADER ---
-st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
-st.markdown("**Developed by Part Time IT Investor**")
+#st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
+#st.markdown("**Developed by Part Time IT Investor**")
+#st.markdown("""
+#Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
+#""")
+# --- MAIN PAGE: HEADER ---
+col1, col2 = st.columns([1, 6]) # Creates a small column for the logo, large for the title
+
+with col1:
+    try:
+        # We use logo.PNG to match the exact case-sensitive file we fixed earlier
+        st.image("logo.PNG", use_column_width=True) 
+    except:
+        pass # If the image fails, it just skips it without throwing an error
+
+with col2:
+    st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
+    st.markdown("**Developed by Part Time IT Investor**")
+
 st.markdown("""
 Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
 """)
