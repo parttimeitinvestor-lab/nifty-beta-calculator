@@ -13,58 +13,49 @@ hide_st_style = """
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             header {visibility: hidden;}
+            /* Aggressive hiding for mobile specific elements */
+            [data-testid="stToolbar"] {visibility: hidden !important;}
+            .viewerBadge_container__1QSob {display: none !important;}
+            .viewerBadge_link__1S137 {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# --- SIDEBAR: BRANDING & PARAMETERS ---
-try:
-    st.sidebar.image("logo.PNG", use_column_width=True)
-except:
-    st.sidebar.markdown("### 👨‍💻 Part Time IT Investor") # Fallback if image doesn't load
-
-# This creates a nice looking red button for YouTube
-youtube_link = "https://www.youtube.com/channel/UCl1-Z3vCL3zUNjlLlT_Lsxg" # <--- PUT YOUR CHANNEL LINK HERE
-st.sidebar.markdown(
-    f"""
-    <a href="{youtube_link}" target="_blank">
-        <div style="background-color:#FF0000;color:white;padding:10px;text-align:center;border-radius:5px;font-weight:bold;margin-bottom:20px;">
-            📺 Subscribe on YouTube
-        </div>
-    </a>
-    """,
-    unsafe_allow_html=True
-)
-
+# --- SIDEBAR: PARAMETERS ---
 st.sidebar.header("Hedging Parameters")
 index_symbol = st.sidebar.text_input("Index Symbol (Yahoo Format)", value="^NSEI", help="^NSEI is Nifty 50. ^NSEBANK is Bank Nifty.")
 lot_size = st.sidebar.number_input("Index Lot Size", value=50, step=1)
 target_delta = st.sidebar.number_input("Target Put Delta", value=0.5, step=0.05, help="0.5 represents an At-The-Money (ATM) Put.")
 
 # --- MAIN PAGE: HEADER ---
-#st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
-#st.markdown("**Developed by Part Time IT Investor**")
-#st.markdown("""
-#Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
-#""")
-# --- MAIN PAGE: HEADER ---
-col1, col2 = st.columns([1, 6]) # Creates a small column for the logo, large for the title
+col1, col2 = st.columns([1, 6])
 
 with col1:
     try:
-        # We use logo.PNG to match the exact case-sensitive file we fixed earlier
         st.image("logo.PNG", use_column_width=True) 
     except:
-        pass # If the image fails, it just skips it without throwing an error
+        pass 
 
 with col2:
     st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
     st.markdown("**Developed by Part Time IT Investor**")
 
+# This creates a full-width red button right under the title on mobile and desktop
+youtube_link = "YOUR_YOUTUBE_LINK_HERE" # <--- PUT YOUR CHANNEL LINK HERE
+st.markdown(
+    f"""
+    <a href="{youtube_link}" target="_blank" style="text-decoration: none;">
+        <div style="background-color:#FF0000;color:white;padding:12px;text-align:center;border-radius:5px;font-weight:bold;font-size:16px;margin-bottom:20px;">
+            📺 Subscribe to Part Time IT Investor on YouTube
+        </div>
+    </a>
+    """,
+    unsafe_allow_html=True
+)
+
 st.markdown("""
 Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
 """)
-
 # --- CORE LOGIC ---
 @st.cache_data(ttl=3600)
 def fetch_yf_data(ticker, days=365):
