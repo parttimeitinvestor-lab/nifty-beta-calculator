@@ -70,9 +70,14 @@ def fetch_yf_data(ticker, days=365):
     start_date = end_date - datetime.timedelta(days=days)
     try:
         data = yf.download(ticker, start=start_date, end=end_date, progress=False)
-        if data.empty:
+        if data is None or data.empty:
             return pd.Series(dtype=float)
-        return data['Close'].squeeze()
+        
+        # Safely extract close prices to avoid single-day array crashes
+        closes = data['Close']
+        if isinstance(closes, pd.DataFrame):
+            closes = closes.iloc[:, 0]
+        return pd.Series(closes)
     except Exception:
         return pd.Series(dtype=float)
 
@@ -117,15 +122,20 @@ with tab1:
             except ValueError:
                 continue 
                 
-            if sym and qty > 0:
-                yf_sym = sym if sym.endswith(".NS") or sym.endswith(".BO") else f"{sym}.NS"
-                holdings_list.append({
-                    "Symbol": sym,
-                    "YF_Ticker": yf_sym,
-                    "Qty": qty,
-                    "Pledged": 0, 
-                    "Avg Price": avg_price
-                })
+      if sym and qty > 0:
+                            # Clean Zerodha custom suffixes so Yahoo Finance can read them
+                            clean_sym = sym
+                            if clean_sym.endswith('-E') or clean_sym.endswith('-F') or clean_sym.endswith('-GS'):
+                                clean_sym = clean_sym.rsplit('-', 1)[0]
+                                
+                            yf_sym = clean_sym if clean_sym.endswith(".NS") or clean_sym.endswith(".BO") else f"{clean_sym}.NS"
+                            holdings_list.append({
+                                "Symbol": sym,
+                                "YF_Ticker": yf_sym,
+                                "Qty": qty,
+                                "Pledged": 0, 
+                                "Avg Price": avg_price
+                            })
 
 with tab2:
     st.markdown("Download your holdings from the Zerodha Console (CSV or Excel) and upload it directly here.")
@@ -214,20 +224,24 @@ if holdings_list:
         total_current_value = 0
         portfolio_beta = 0
         
-        for item in holdings_list:
+       for item in holdings_list:
             stock_closes = fetch_yf_data(item['YF_Ticker'])
+            qty = item['Qty']
+            avg_price = item['Avg Price']
+            invested = qty * avg_price
             
-            if stock_closes.empty:
-                item['LTP'] = 0.0
+            # Robust fallback for bonds, delisted ETFs, or missing data
+            if not isinstance(stock_closes, pd.Series) or stock_closes.empty or len(stock_closes) < 2:
+                item['LTP'] = avg_price
                 item['P&L'] = 0.0
-                item['Beta'] = 1.0 
+                item['Beta'] = 0.0 # Bonds/Missing assets have 0 equity risk
+                item['Current Value'] = invested
+                
+                total_invested += invested
+                total_current_value += invested
                 continue
             
             ltp = float(stock_closes.iloc[-1])
-            qty = item['Qty']
-            avg_price = item['Avg Price']
-            
-            invested = qty * avg_price
             current = qty * ltp
             
             total_invested += invested
