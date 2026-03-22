@@ -297,6 +297,45 @@ if holdings_list:
         # The Bold Risk Statement (Translating Beta for the audience)
         st.markdown(f"### 🚨 **Risk Analysis: If Nifty 50 falls by 1%, your portfolio is expected to fall by {portfolio_beta:.2f}%**")
         
+        # --- NEW: ASK GEMINI AI VIBE SECTION ---
+        st.markdown("---")
+        if st.button("🤖 **Ask Gemini: What do you think of my portfolio?**"):
+            with st.status("Gemini is analyzing your risk clusters...", expanded=True):
+                st.write("🔍 **Scanning Beta exposure...**")
+                
+                if portfolio_beta > 1.2:
+                    sentiment = "Aggressive/High Risk"
+                    advice = "Your portfolio is highly sensitive to market swings. While you'll outperform in a bull run, a Nifty correction will hit you harder than most. Hedging is strongly advised."
+                elif portfolio_beta < 0.8:
+                    sentiment = "Defensive/Conservative"
+                    advice = "You are well-insulated from market volatility. Your assets move less than the index, but you might lag behind during a massive market rally."
+                else:
+                    sentiment = "Market Neutral/Balanced"
+                    advice = "Your portfolio is perfectly synced with the Nifty 50. You are capturing the broad market move efficiently."
+
+                st.markdown(f"### **Gemini's AI Insights**")
+                st.write(f"**Portfolio Stance:** {sentiment}")
+                st.write(f"**AI Observation:** {advice}")
+                st.write("---")
+                st.caption("Powered by Gemini. Built by Part Time IT Investor.")
+        
+        # --- DYNAMIC TERMINAL LABELS (Adapts to Insurance vs Income mode) ---
+        try:
+            current_mode = hedge_mode
+        except NameError:
+            current_mode = "Buy Puts (Insurance)" # Fallback safety
+
+        if current_mode == "Buy Puts (Insurance)":
+            exact_lbl = "Exact Puts Required:"
+            final_action = "BUY"
+            final_asset = "LOTS OF PUTS"
+            delta_lbl = "Option Delta Used:"
+        else:
+            exact_lbl = "Exact Spreads Required:"
+            final_action = "CREATE"
+            final_asset = "LOTS OF BEAR CALL SPREADS"
+            delta_lbl = "Strategy Net Delta:"
+
         # --- BUILD THE RAW ASCII TERMINAL OUTPUT ---
         out_str = "-" * 85 + "\n"
         out_str += f"{'SYMBOL':<15} | {'QTY':<6} | {'PLEDGED':<7} | {'AVG PRICE':<9} | {'LTP':<9} | {'P&L':<10} | {'BETA'}\n"
@@ -326,10 +365,10 @@ if holdings_list:
         out_str += f"Beta-Weighted Risk Exposure: Rs {beta_weighted_value:,.2f}\n"
         out_str += "-" * 55 + "\n"
         out_str += f"Current Index Price:         Rs {index_ltp:,.2f} ({index_symbol})\n"
-        out_str += f"Option Delta Used:           {target_delta}\n"
+        out_str += f"{delta_lbl:<28} {target_delta}\n"
         out_str += "-" * 55 + "\n"
-        out_str += f"Exact Puts Required:         {exact_contracts:.2f}\n"
-        out_str += f"> FINAL CALCULATED HEDGE:    BUY {recommended_contracts} LOTS <\n"
+        out_str += f"{exact_lbl:<28} {exact_contracts:.2f}\n"
+        out_str += f"> FINAL CALCULATED HEDGE:    {final_action} {recommended_contracts} {final_asset} <\n"
         out_str += "=" * 55 + "\n"
 
         st.code(out_str, language="text")
