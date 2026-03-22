@@ -8,23 +8,46 @@ import datetime
 st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", layout="wide", page_icon="📈")
 
 # --- HIDE STREAMLIT BRANDING ---
+#hide_st_style = """
+          #  <style>
+          #  /* Hide only the top-right menu and branding elements */
+          #  [data-testid="stHeaderActionElements"] {display: none !important;}
+         #   #MainMenu {visibility: hidden;}
+            
+          #  /* Hide default footer */
+          #  footer {visibility: hidden !important;}
+            
+          #  /* Hide Viewer Badge (Hosted with Streamlit) */
+           # [data-testid="stViewerBadge"] {display: none !important;}
+         #   [class^="viewerBadge"] {display: none !important;}
+          #  a[href^="https://streamlit.io/cloud"] {display: none !important;}
+         #   </style>
+        #    """
+#st.markdown(hide_st_style, unsafe_allow_html=True)
+
+# --- HIDE STREAMLIT BRANDING ---
 hide_st_style = """
             <style>
-            /* Hide only the top-right menu and branding elements */
+            /* 1. Hide top-right action menu (GitHub, deploy, etc.) */
             [data-testid="stHeaderActionElements"] {display: none !important;}
-            #MainMenu {visibility: hidden;}
             
-            /* Hide default footer */
-            footer {visibility: hidden !important;}
+            /* 2. Hide the default Streamlit footer */
+            footer {display: none !important;}
             
-            /* Hide Viewer Badge (Hosted with Streamlit) */
+            /* 3. Hide the bottom-right Streamlit Cloud Logo/Badge */
+            .viewerBadge_container {display: none !important;}
+            .viewerBadge_link {display: none !important;}
             [data-testid="stViewerBadge"] {display: none !important;}
-            [class^="viewerBadge"] {display: none !important;}
-            a[href^="https://streamlit.io/cloud"] {display: none !important;}
+            
+            /* 4. Hide floating Manage App / Deploy buttons */
+            [data-testid="stAppDeployButton"] {display: none !important;}
+            [data-testid="manage-app-button"] {display: none !important;}
+            
+            /* 5. Ultimate fallback for standard Streamlit cloud links */
+            a[href*="streamlit.io"] {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-
 # --- SIDEBAR: PARAMETERS ---
 #st.sidebar.header("Hedging Parameters")
 #index_symbol = st.sidebar.text_input("Index Symbol (Yahoo Format)", value="^NSEI", help="^NSEI is Nifty 50. ^NSEBANK is Bank Nifty.")
