@@ -160,7 +160,12 @@ with tab2:
                     
                     sym_col = 'Symbol' if 'Symbol' in df.columns else 'Instrument'
                     price_col = 'Average Price' if 'Average Price' in df.columns else ('Avg. cost' if 'Avg. cost' in df.columns else None)
-                    qty_cols = [c for c in df.columns if c == 'Qty.' or str(c).startswith('Quantity')]
+                    
+                    # Fix 1: Sum all Qty columns EXCEPT 'Long Term' to prevent double counting
+                    qty_cols = [c for c in df.columns if (c == 'Qty.' or str(c).startswith('Quantity')) and 'long term' not in str(c).lower()]
+                    
+                    # Fix 2: Dynamically find all Pledged columns (Margin + MTF) for the UI display
+                    pledged_cols = [c for c in df.columns if 'pledged' in str(c).lower()]
 
                     if price_col and qty_cols:
                         for index, row in df.iterrows():
@@ -172,17 +177,14 @@ with tab2:
                             qty_val = pd.to_numeric(row[qty_cols], errors='coerce').sum()
 
                             if pd.notna(price_val) and qty_val > 0:
-                                # Clean Zerodha custom suffixes so Yahoo Finance can read them
                                 clean_sym = sym
                                 if clean_sym.endswith('-E') or clean_sym.endswith('-F') or clean_sym.endswith('-GS'):
                                     clean_sym = clean_sym.rsplit('-', 1)[0]
                                     
                                 yf_sym = clean_sym if clean_sym.endswith(".NS") or clean_sym.endswith(".BO") else f"{clean_sym}.NS"
                                 
-                                pledged_val = 0
-                                if 'Quantity Pledged' in df.columns:
-                                    p_val = pd.to_numeric(row['Quantity Pledged'], errors='coerce')
-                                    pledged_val = p_val if pd.notna(p_val) else 0
+                                # Accurately capture pledged quantity for the UI
+                                pledged_val = pd.to_numeric(row[pledged_cols], errors='coerce').sum() if pledged_cols else 0
 
                                 holdings_list.append({
                                     "Symbol": sym,
@@ -266,7 +268,10 @@ if holdings_list:
         exact_contracts = beta_weighted_value / (index_ltp * lot_size * target_delta)
         recommended_contracts = round(exact_contracts)
 
-        st.success("Analysis Complete!")
+      st.success("Analysis Complete!")
+        
+        # The Bold Risk Statement (Translating Beta for the audience)
+        st.markdown(f"### 🚨 **Risk Analysis: If Nifty 50 falls by 1%, your portfolio is expected to fall by {portfolio_beta:.2f}%**")
         
         # --- BUILD THE RAW ASCII TERMINAL OUTPUT ---
         out_str = "-" * 85 + "\n"
@@ -300,7 +305,11 @@ if holdings_list:
         out_str += f"Option Delta Used:           {target_delta}\n"
         out_str += "-" * 55 + "\n"
         out_str += f"Exact Puts Required:         {exact_contracts:.2f}\n"
-        out_str += f"> RECOMMENDED HEDGE:         BUY {recommended_contracts} LOTS <\n"
+        out_str += f"> FINAL CALCULATED HEDGE:    BUY {recommended_contracts} LOTS <\n"
         out_str += "=" * 55 + "\n"
 
         st.code(out_str, language="text")
+
+# --- SEBI COMPLIANCE DISCLAIMER ---
+st.markdown("---")
+st.caption("⚠️ **Disclaimer:** This tool is for educational and informational purposes only. The creator is **not** a SEBI-registered investment advisor. Options trading and hedging involve significant financial risk. The calculations provided by this tool are mathematical estimates based on historical data and do not guarantee future market performance. Always consult with a qualified financial advisor and conduct your own risk assessment before executing any live trades.")
