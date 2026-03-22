@@ -48,7 +48,7 @@ with col2:
     st.markdown("**Developed by Part Time IT Investor**")
 
 # This creates a full-width red button right under the title on mobile and desktop
-youtube_link = "https://www.youtube.com/channel/UCl1-Z3vCL3zUNjlLlT_Lsxg" # <--- PUT YOUR CHANNEL LINK HERE
+youtube_link = "https://www.youtube.com/channel/UCl1-Z3vCL3zUNjlLlT_Lsxg" 
 st.markdown(
     f"""
     <a href="{youtube_link}" target="_blank" style="text-decoration: none;">
@@ -63,6 +63,7 @@ st.markdown(
 st.markdown("""
 Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
 """)
+
 # --- CORE LOGIC ---
 @st.cache_data(ttl=3600)
 def fetch_yf_data(ticker, days=365):
@@ -122,20 +123,15 @@ with tab1:
             except ValueError:
                 continue 
                 
-      if sym and qty > 0:
-                            # Clean Zerodha custom suffixes so Yahoo Finance can read them
-                            clean_sym = sym
-                            if clean_sym.endswith('-E') or clean_sym.endswith('-F') or clean_sym.endswith('-GS'):
-                                clean_sym = clean_sym.rsplit('-', 1)[0]
-                                
-                            yf_sym = clean_sym if clean_sym.endswith(".NS") or clean_sym.endswith(".BO") else f"{clean_sym}.NS"
-                            holdings_list.append({
-                                "Symbol": sym,
-                                "YF_Ticker": yf_sym,
-                                "Qty": qty,
-                                "Pledged": 0, 
-                                "Avg Price": avg_price
-                            })
+            if sym and qty > 0:
+                yf_sym = sym if sym.endswith(".NS") or sym.endswith(".BO") else f"{sym}.NS"
+                holdings_list.append({
+                    "Symbol": sym,
+                    "YF_Ticker": yf_sym,
+                    "Qty": qty,
+                    "Pledged": 0, 
+                    "Avg Price": avg_price
+                })
 
 with tab2:
     st.markdown("Download your holdings from the Zerodha Console (CSV or Excel) and upload it directly here.")
@@ -144,13 +140,11 @@ with tab2:
     if st.button("Calculate Hedge from File", type="primary"):
         if uploaded_file is not None:
             try:
-                # 1. Read raw data without assuming headers are at the top
                 if uploaded_file.name.endswith('.csv'):
                     raw_df = pd.read_csv(uploaded_file, header=None)
                 else:
                     raw_df = pd.read_excel(uploaded_file, header=None)
                 
-                # 2. Dynamically scan downward to find the actual header row
                 header_idx = -1
                 for i, row in raw_df.iterrows():
                     row_vals = [str(val).strip().lower() for val in row.values]
@@ -161,15 +155,11 @@ with tab2:
                 if header_idx == -1:
                     st.error("Error: Could not find a 'Symbol' or 'Instrument' row to use as headers.")
                 else:
-                    # 3. Set the correct headers and drop the top summary rows
                     df = raw_df.iloc[header_idx + 1:].copy()
                     df.columns = [str(c).strip() for c in raw_df.iloc[header_idx]]
                     
-                    # 4. Map columns dynamically (Handles both CSV and Excel formats)
                     sym_col = 'Symbol' if 'Symbol' in df.columns else 'Instrument'
                     price_col = 'Average Price' if 'Average Price' in df.columns else ('Avg. cost' if 'Avg. cost' in df.columns else None)
-                    
-                    # Find all quantity-related columns to sum them up
                     qty_cols = [c for c in df.columns if c == 'Qty.' or str(c).startswith('Quantity')]
 
                     if price_col and qty_cols:
@@ -178,14 +168,17 @@ with tab2:
                             if not sym or str(sym).lower() == 'nan': 
                                 continue
                                 
-                            # Safely convert strings to numbers, skipping bad rows
                             price_val = pd.to_numeric(row[price_col], errors='coerce')
                             qty_val = pd.to_numeric(row[qty_cols], errors='coerce').sum()
 
                             if pd.notna(price_val) and qty_val > 0:
-                                yf_sym = sym if sym.endswith(".NS") or sym.endswith(".BO") else f"{sym}.NS"
+                                # Clean Zerodha custom suffixes so Yahoo Finance can read them
+                                clean_sym = sym
+                                if clean_sym.endswith('-E') or clean_sym.endswith('-F') or clean_sym.endswith('-GS'):
+                                    clean_sym = clean_sym.rsplit('-', 1)[0]
+                                    
+                                yf_sym = clean_sym if clean_sym.endswith(".NS") or clean_sym.endswith(".BO") else f"{clean_sym}.NS"
                                 
-                                # Check if they specifically have a pledged column for the UI display
                                 pledged_val = 0
                                 if 'Quantity Pledged' in df.columns:
                                     p_val = pd.to_numeric(row['Quantity Pledged'], errors='coerce')
@@ -204,7 +197,6 @@ with tab2:
                 st.error(f"Error reading file: {e}")
         else:
             st.warning("Please upload a file first.")
-   
 
 # --- PROCESSING & RESULTS ---
 if holdings_list:
@@ -224,7 +216,7 @@ if holdings_list:
         total_current_value = 0
         portfolio_beta = 0
         
-       for item in holdings_list:
+        for item in holdings_list:
             stock_closes = fetch_yf_data(item['YF_Ticker'])
             qty = item['Qty']
             avg_price = item['Avg Price']
@@ -288,7 +280,7 @@ if holdings_list:
             avg_price = item['Avg Price']
             ltp = item.get('LTP', 0.0)
             pnl = item.get('P&L', 0.0)
-            beta = item.get('Beta', 1.0)
+            beta = item.get('Beta', 0.0)
             
             out_str += f"{sym:<15} | {qty:<6.0f} | {pledged:<7.0f} | {avg_price:<9.2f} | {ltp:<9.2f} | {pnl:<10.2f} | {beta:.2f}\n"
 
