@@ -19,7 +19,7 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # --- SIDEBAR: BRANDING & PARAMETERS ---
 try:
-    st.sidebar.image("logo.png", use_column_width=True)
+    st.sidebar.image("logo.PNG", use_column_width=True)
 except:
     st.sidebar.markdown("### 👨‍💻 Part Time IT Investor") # Fallback if image doesn't load
 
