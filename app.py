@@ -5,7 +5,8 @@ import numpy as np
 import datetime
 
 # --- PAGE CONFIG ---
-st.set_page_config(page_title="Beta Hedge Calculator", layout="wide")
+st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", layout="wide", page_icon="📈")
+
 # --- HIDE STREAMLIT BRANDING ---
 hide_st_style = """
             <style>
@@ -16,16 +17,36 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
-st.markdown("""
-Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
-""")
+# --- SIDEBAR: BRANDING & PARAMETERS ---
+try:
+    st.sidebar.image("logo.png", use_column_width=True)
+except:
+    st.sidebar.markdown("### 👨‍💻 Part Time IT Investor") # Fallback if image doesn't load
 
-# --- SIDEBAR: PARAMETERS ---
+# This creates a nice looking red button for YouTube
+youtube_link = "https://www.youtube.com/channel/UCl1-Z3vCL3zUNjlLlT_Lsxg" # <--- PUT YOUR CHANNEL LINK HERE
+st.sidebar.markdown(
+    f"""
+    <a href="{youtube_link}" target="_blank">
+        <div style="background-color:#FF0000;color:white;padding:10px;text-align:center;border-radius:5px;font-weight:bold;margin-bottom:20px;">
+            📺 Subscribe on YouTube
+        </div>
+    </a>
+    """,
+    unsafe_allow_html=True
+)
+
 st.sidebar.header("Hedging Parameters")
 index_symbol = st.sidebar.text_input("Index Symbol (Yahoo Format)", value="^NSEI", help="^NSEI is Nifty 50. ^NSEBANK is Bank Nifty.")
 lot_size = st.sidebar.number_input("Index Lot Size", value=50, step=1)
 target_delta = st.sidebar.number_input("Target Put Delta", value=0.5, step=0.05, help="0.5 represents an At-The-Money (ATM) Put.")
+
+# --- MAIN PAGE: HEADER ---
+st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
+st.markdown("**Developed by Part Time IT Investor**")
+st.markdown("""
+Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
+""")
 
 # --- CORE LOGIC ---
 @st.cache_data(ttl=3600)
