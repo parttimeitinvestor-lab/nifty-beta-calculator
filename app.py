@@ -296,28 +296,28 @@ if holdings_list:
         
         # The Bold Risk Statement (Translating Beta for the audience)
         st.markdown(f"### 🚨 **Risk Analysis: If Nifty 50 falls by 1%, your portfolio is expected to fall by {portfolio_beta:.2f}%**")
-        
-        # --- NEW: ASK GEMINI AI VIBE SECTION ---
-        st.markdown("---")
-        if st.button("🤖 **Ask Gemini: What do you think of my portfolio?**"):
-            with st.status("Gemini is analyzing your risk clusters...", expanded=True):
-                st.write("🔍 **Scanning Beta exposure...**")
-                
-                if portfolio_beta > 1.2:
-                    sentiment = "Aggressive/High Risk"
-                    advice = "Your portfolio is highly sensitive to market swings. While you'll outperform in a bull run, a Nifty correction will hit you harder than most. Hedging is strongly advised."
-                elif portfolio_beta < 0.8:
-                    sentiment = "Defensive/Conservative"
-                    advice = "You are well-insulated from market volatility. Your assets move less than the index, but you might lag behind during a massive market rally."
-                else:
-                    sentiment = "Market Neutral/Balanced"
-                    advice = "Your portfolio is perfectly synced with the Nifty 50. You are capturing the broad market move efficiently."
 
-                st.markdown(f"### **Gemini's AI Insights**")
-                st.write(f"**Portfolio Stance:** {sentiment}")
-                st.write(f"**AI Observation:** {advice}")
-                st.write("---")
-                st.caption("Powered by Gemini. Built by Part Time IT Investor.")
+       # --- NEW: ASK GEMINI AI VIBE SECTION ---
+        st.markdown("---")
+        with st.expander("🤖 **Ask Gemini: What do you think of my portfolio?**"):
+            st.write("🔍 **Scanning Beta exposure...**")
+            
+            # The logic remains exactly the same
+            if portfolio_beta > 1.2:
+                sentiment = "Aggressive/High Risk"
+                advice = "Your portfolio is highly sensitive to market swings. While you'll outperform in a bull run, a Nifty correction will hit you harder than most. Hedging is strongly advised."
+            elif portfolio_beta < 0.8:
+                sentiment = "Defensive/Conservative"
+                advice = "You are well-insulated from market volatility. Your assets move less than the index, but you might lag behind during a massive market rally."
+            else:
+                sentiment = "Market Neutral/Balanced"
+                advice = "Your portfolio is perfectly synced with the Nifty 50. You are capturing the broad market move efficiently."
+
+            st.markdown(f"### **Gemini's AI Insights**")
+            st.write(f"**Portfolio Stance:** {sentiment}")
+            st.write(f"**AI Observation:** {advice}")
+            st.write("---")
+            st.caption("Powered by Gemini. Built by Part Time IT Investor.")
         
         # --- DYNAMIC TERMINAL LABELS (Adapts to Insurance vs Income mode) ---
         try:
