@@ -6,6 +6,15 @@ import datetime
 
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Beta Hedge Calculator", layout="wide")
+# --- HIDE STREAMLIT BRANDING ---
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 st.title("🛡️ Portfolio Beta & Option Hedge Calculator")
 st.markdown("""
