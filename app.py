@@ -10,19 +10,16 @@ st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", l
 # --- HIDE STREAMLIT BRANDING ---
 hide_st_style = """
             <style>
-            /* Hide top header menu */
+            /* Hide only the top-right menu and branding elements */
+            [data-testid="stHeaderActionElements"] {display: none !important;}
             #MainMenu {visibility: hidden;}
+            
             /* Hide default footer */
-            footer {visibility: hidden;}
-            /* Hide top header completely */
-            header {visibility: hidden;}
-            /* Hide Streamlit Toolbar (top right) */
-            [data-testid="stToolbar"] {visibility: hidden !important;}
+            footer {visibility: hidden !important;}
+            
             /* Hide Viewer Badge (Hosted with Streamlit) */
             [data-testid="stViewerBadge"] {display: none !important;}
-            /* Catch-all for dynamic viewer badge classes */
             [class^="viewerBadge"] {display: none !important;}
-            /* Hide any floating Streamlit logos/links */
             a[href^="https://streamlit.io/cloud"] {display: none !important;}
             </style>
             """
