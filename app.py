@@ -10,13 +10,20 @@ st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", l
 # --- HIDE STREAMLIT BRANDING ---
 hide_st_style = """
             <style>
+            /* Hide top header menu */
             #MainMenu {visibility: hidden;}
+            /* Hide default footer */
             footer {visibility: hidden;}
+            /* Hide top header completely */
             header {visibility: hidden;}
-            /* Aggressive hiding for mobile specific elements */
+            /* Hide Streamlit Toolbar (top right) */
             [data-testid="stToolbar"] {visibility: hidden !important;}
-            .viewerBadge_container__1QSob {display: none !important;}
-            .viewerBadge_link__1S137 {display: none !important;}
+            /* Hide Viewer Badge (Hosted with Streamlit) */
+            [data-testid="stViewerBadge"] {display: none !important;}
+            /* Catch-all for dynamic viewer badge classes */
+            [class^="viewerBadge"] {display: none !important;}
+            /* Hide any floating Streamlit logos/links */
+            a[href^="https://streamlit.io/cloud"] {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
@@ -41,7 +48,7 @@ with col2:
     st.markdown("**Developed by Part Time IT Investor**")
 
 # This creates a full-width red button right under the title on mobile and desktop
-youtube_link = "YOUR_YOUTUBE_LINK_HERE" # <--- PUT YOUR CHANNEL LINK HERE
+youtube_link = "https://www.youtube.com/channel/UCl1-Z3vCL3zUNjlLlT_Lsxg" # <--- PUT YOUR CHANNEL LINK HERE
 st.markdown(
     f"""
     <a href="{youtube_link}" target="_blank" style="text-decoration: none;">
