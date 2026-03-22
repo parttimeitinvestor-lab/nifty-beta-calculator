@@ -268,7 +268,7 @@ if holdings_list:
         exact_contracts = beta_weighted_value / (index_ltp * lot_size * target_delta)
         recommended_contracts = round(exact_contracts)
 
-      st.success("Analysis Complete!")
+        st.success("Analysis Complete!")
         
         # The Bold Risk Statement (Translating Beta for the audience)
         st.markdown(f"### 🚨 **Risk Analysis: If Nifty 50 falls by 1%, your portfolio is expected to fall by {portfolio_beta:.2f}%**")
