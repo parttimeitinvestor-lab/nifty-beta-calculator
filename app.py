@@ -134,35 +134,67 @@ with tab2:
     if st.button("Calculate Hedge from File", type="primary"):
         if uploaded_file is not None:
             try:
+                # 1. Read raw data without assuming headers are at the top
                 if uploaded_file.name.endswith('.csv'):
-                    df = pd.read_csv(uploaded_file)
+                    raw_df = pd.read_csv(uploaded_file, header=None)
                 else:
-                    df = pd.read_excel(uploaded_file)
+                    raw_df = pd.read_excel(uploaded_file, header=None)
                 
-                if 'Instrument' in df.columns and 'Qty.' in df.columns and 'Avg. cost' in df.columns:
-                    for index, row in df.iterrows():
-                        sym = str(row['Instrument']).strip()
-                        try:
-                            qty = float(row['Qty.'])
-                            avg_price = float(row['Avg. cost'])
-                        except ValueError:
-                            continue
-                            
-                        if sym and qty > 0:
-                            yf_sym = sym if sym.endswith(".NS") or sym.endswith(".BO") else f"{sym}.NS"
-                            holdings_list.append({
-                                "Symbol": sym,
-                                "YF_Ticker": yf_sym,
-                                "Qty": qty,
-                                "Pledged": 0, 
-                                "Avg Price": avg_price
-                            })
+                # 2. Dynamically scan downward to find the actual header row
+                header_idx = -1
+                for i, row in raw_df.iterrows():
+                    row_vals = [str(val).strip().lower() for val in row.values]
+                    if 'symbol' in row_vals or 'instrument' in row_vals:
+                        header_idx = i
+                        break
+                
+                if header_idx == -1:
+                    st.error("Error: Could not find a 'Symbol' or 'Instrument' row to use as headers.")
                 else:
-                    st.error("Error: Could not find Zerodha's standard columns ('Instrument', 'Qty.', 'Avg. cost').")
+                    # 3. Set the correct headers and drop the top summary rows
+                    df = raw_df.iloc[header_idx + 1:].copy()
+                    df.columns = [str(c).strip() for c in raw_df.iloc[header_idx]]
+                    
+                    # 4. Map columns dynamically (Handles both CSV and Excel formats)
+                    sym_col = 'Symbol' if 'Symbol' in df.columns else 'Instrument'
+                    price_col = 'Average Price' if 'Average Price' in df.columns else ('Avg. cost' if 'Avg. cost' in df.columns else None)
+                    
+                    # Find all quantity-related columns to sum them up
+                    qty_cols = [c for c in df.columns if c == 'Qty.' or str(c).startswith('Quantity')]
+
+                    if price_col and qty_cols:
+                        for index, row in df.iterrows():
+                            sym = str(row[sym_col]).strip()
+                            if not sym or str(sym).lower() == 'nan': 
+                                continue
+                                
+                            # Safely convert strings to numbers, skipping bad rows
+                            price_val = pd.to_numeric(row[price_col], errors='coerce')
+                            qty_val = pd.to_numeric(row[qty_cols], errors='coerce').sum()
+
+                            if pd.notna(price_val) and qty_val > 0:
+                                yf_sym = sym if sym.endswith(".NS") or sym.endswith(".BO") else f"{sym}.NS"
+                                
+                                # Check if they specifically have a pledged column for the UI display
+                                pledged_val = 0
+                                if 'Quantity Pledged' in df.columns:
+                                    p_val = pd.to_numeric(row['Quantity Pledged'], errors='coerce')
+                                    pledged_val = p_val if pd.notna(p_val) else 0
+
+                                holdings_list.append({
+                                    "Symbol": sym,
+                                    "YF_Ticker": yf_sym,
+                                    "Qty": qty_val,
+                                    "Pledged": pledged_val,
+                                    "Avg Price": float(price_val)
+                                })
+                    else:
+                        st.error("Found the symbol column, but couldn't identify the Quantity or Price columns.")
             except Exception as e:
                 st.error(f"Error reading file: {e}")
         else:
             st.warning("Please upload a file first.")
+   
 
 # --- PROCESSING & RESULTS ---
 if holdings_list:
