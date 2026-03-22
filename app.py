@@ -7,31 +7,31 @@ import datetime
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", layout="wide", page_icon="📈")
 
-
-
 # --- HIDE STREAMLIT BRANDING ---
 hide_st_style = """
             <style>
-            /* 1. Hide top-right action menu (GitHub, deploy, etc.) */
+            /* Hide top-right menu but keep left sidebar toggle */
             [data-testid="stHeaderActionElements"] {display: none !important;}
             
-            /* 2. Hide the default Streamlit footer */
+            /* Hide footer */
             footer {display: none !important;}
             
-            /* 3. Hide the bottom-right Streamlit Cloud Logo/Badge */
-            .viewerBadge_container {display: none !important;}
-            .viewerBadge_link {display: none !important;}
+            /* Hide the standard Viewer Badge */
             [data-testid="stViewerBadge"] {display: none !important;}
             
-            /* 4. Hide floating Manage App / Deploy buttons */
+            /* Hide the Developer/Deploy menus */
             [data-testid="stAppDeployButton"] {display: none !important;}
             [data-testid="manage-app-button"] {display: none !important;}
+            .stDeployButton {display: none !important;}
             
-            /* 5. Ultimate fallback for standard Streamlit cloud links */
-            a[href*="streamlit.io"] {display: none !important;}
+            /* Bruteforce hide any dynamically injected Streamlit iFrames in the bottom right */
+            iframe[src*="streamlit"] {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
+
+
+
 # --- SIDEBAR: PARAMETERS ---
 #st.sidebar.header("Hedging Parameters")
 #index_symbol = st.sidebar.text_input("Index Symbol (Yahoo Format)", value="^NSEI", help="^NSEI is Nifty 50. ^NSEBANK is Bank Nifty.")
