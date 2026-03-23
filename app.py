@@ -291,19 +291,42 @@ if holdings_list:
             st.error("Total portfolio value calculated as zero. Check your inputs.")
             st.stop()
 
-        for item in holdings_list:
+        
+           for item in holdings_list:
             if 'Beta' in item and item['Current Value'] > 0:
                 weight = item['Current Value'] / total_current_value
                 portfolio_beta += (weight * item['Beta'])
 
-        beta_weighted_value = total_current_value * portfolio_beta
+        # --- NEW: VOLATILITY-ADJUSTED BETA (CRASH MODE) ---
+        with st.spinner("Fetching India VIX for Crash Detection..."):
+            vix_closes = fetch_yf_data("^INDIAVIX")
+            if not vix_closes.empty:
+                current_vix = float(vix_closes.iloc[-1])
+                baseline_vix = 15.0 # Standard "normal" volatility for India
+                
+                # Only inflate Beta if VIX is above normal (Crash Scenario)
+                if current_vix > baseline_vix:
+                    vix_scalar = current_vix / baseline_vix
+                    adjusted_portfolio_beta = portfolio_beta * vix_scalar
+                    vix_status = f"CRASH MODE ACTIVE (VIX: {current_vix:.2f})"
+                else:
+                    adjusted_portfolio_beta = portfolio_beta
+                    vix_status = f"NORMAL VOLATILITY (VIX: {current_vix:.2f})"
+            else:
+                adjusted_portfolio_beta = portfolio_beta
+                vix_status = "VIX DATA UNAVAILABLE"
+
+        # Use the adjusted beta for the final math
+        beta_weighted_value = total_current_value * adjusted_portfolio_beta
         exact_contracts = beta_weighted_value / (index_ltp * lot_size * target_delta)
         recommended_contracts = round(exact_contracts)
 
         st.success("Analysis Complete!")
         
-        # The Bold Risk Statement (Translating Beta for the audience)
-        st.markdown(f"### 🚨 **Risk Analysis: If Nifty 50 falls by 1%, your portfolio is expected to fall by {portfolio_beta:.2f}%**")
+        # The Bold Risk Statement 
+        st.markdown(f"### 🚨 **Risk Analysis: If Nifty 50 falls by 1%, your portfolio is expected to fall by {adjusted_portfolio_beta:.2f}%**")
+        st.caption(f"🛡️ **Volatility Sensor:** {vix_status}")
+        st.success("Analysis Complete!")
 
        # --- NEW: ASK GEMINI AI VIBE SECTION ---
         st.markdown("---")
