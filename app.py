@@ -290,10 +290,9 @@ if holdings_list:
         if total_current_value == 0:
             st.error("Total portfolio value calculated as zero. Check your inputs.")
             st.stop()
-
-        
-           for item in holdings_list:
-            if 'Beta' in item and item['Current Value'] > 0:
+            
+         for item in holdings_list:
+             if 'Beta' in item and item['Current Value'] > 0:
                 weight = item['Current Value'] / total_current_value
                 portfolio_beta += (weight * item['Beta'])
 
