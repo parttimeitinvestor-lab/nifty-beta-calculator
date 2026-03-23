@@ -92,7 +92,7 @@ with param_col3:
 st.markdown("---")
 
 # --- MAIN PAGE: PORTFOLIO INPUT ---
-st.subheader("Step 1: Enter Your Portfolio")
+#st.subheader("Step 1: Enter Your Portfolio")
 
 # --- CORE LOGIC ---
 @st.cache_data(ttl=3600)
