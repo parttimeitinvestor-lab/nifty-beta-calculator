@@ -291,8 +291,8 @@ if holdings_list:
             st.error("Total portfolio value calculated as zero. Check your inputs.")
             st.stop()
             
-         for item in holdings_list:
-             if 'Beta' in item and item['Current Value'] > 0:
+        for item in holdings_list:
+            if 'Beta' in item and item['Current Value'] > 0:
                 weight = item['Current Value'] / total_current_value
                 portfolio_beta += (weight * item['Beta'])
 
@@ -333,10 +333,11 @@ if holdings_list:
             st.write("🔍 **Scanning Beta exposure...**")
             
             # The logic remains exactly the same
-            if portfolio_beta > 1.2:
+           # The corrected logic
+            if adjusted_portfolio_beta > 1.2:
                 sentiment = "Aggressive/High Risk"
                 advice = "Your portfolio is highly sensitive to market swings. While you'll outperform in a bull run, a Nifty correction will hit you harder than most. Hedging is strongly advised."
-            elif portfolio_beta < 0.8:
+            elif adjusted_portfolio_beta < 0.8:
                 sentiment = "Defensive/Conservative"
                 advice = "You are well-insulated from market volatility. Your assets move less than the index, but you might lag behind during a massive market rally."
             else:
