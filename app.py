@@ -10,16 +10,17 @@ st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", l
 # --- HIDE STREAMLIT BRANDING & GITHUB LINK ---
 hide_st_style = """
             <style>
-            /* 1. Hide ONLY the right-side toolbar (GitHub, Menu) */
-            [data-testid="stToolbar"] {visibility: hidden !important;}
+            /* 1. Make the right-side toolbar (GitHub, Menu) invisible and unclickable */
+            [data-testid="stToolbar"] {opacity: 0 !important; pointer-events: none !important;}
             
-            /* 2. Hide the Deploy button specifically */
+            /* 2. Completely hide the floating Deploy button */
             [data-testid="stAppDeployButton"] {display: none !important;}
             
-            /* 3. Hide Streamlit Footer */
-            footer {display: none !important;}
+            /* 3. Hide the Streamlit Footer */
+            footer {visibility: hidden !important;}
             
             /* 4. Hide the bottom-right Streamlit Cloud Logo/Badge */
+            .viewerBadge_container {display: none !important;}
             [data-testid="stViewerBadge"] {display: none !important;}
             </style>
             """
