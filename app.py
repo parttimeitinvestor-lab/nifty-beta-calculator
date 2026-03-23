@@ -28,35 +28,6 @@ hide_st_style = """
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# --- SIDEBAR: PARAMETERS ---
-#st.sidebar.header("Hedging Parameters")
-#index_symbol = st.sidebar.text_input("Index Symbol (Yahoo Format)", value="^NSEI", help="^NSEI is Nifty 50. ^NSEBANK is Bank Nifty.")
-#lot_size = st.sidebar.number_input("Index Lot Size", value=50, step=1)
-#target_delta = st.sidebar.number_input("Target Put Delta", value=0.5, step=0.05, help="0.5 represents an At-The-Money (ATM) Put.")
-
-# --- SIDEBAR: PARAMETERS ---
-st.sidebar.header("Hedging Parameters")
-
-# The Subscriber-Only Gate
-with st.sidebar.expander("🔐 Unlock Advanced Strategies"):
-    passcode = st.text_input("Enter Subscriber Passcode", type="password")
-    if passcode == "NIFTY2026": # You can change this to any code you like
-        st.sidebar.success("Advanced Mode Active!")
-        hedge_mode = st.sidebar.radio("Hedge Strategy", ["Buy Puts (Insurance)", "Sell Call Spreads (Income)"])
-    else:
-        st.sidebar.info("Advanced strategies are locked. Watch the video to find the code!")
-        hedge_mode = "Buy Puts (Insurance)"
-
-index_symbol = st.sidebar.text_input("Index Symbol (Yahoo Format)", value="^NSEI")
-lot_size = st.sidebar.number_input("Index Lot Size", value=50, step=1)
-
-if hedge_mode == "Buy Puts (Insurance)":
-    target_delta = st.sidebar.number_input("Target Put Delta", value=0.20, step=0.05, help="0.20 is a standard OTM Put.")
-    mode_label = "PUTS"
-else:
-    # Based on your Bear Call Spread strategy
-    target_delta = st.sidebar.number_input("Net Strategy Delta", value=0.25, step=0.05, help="The net delta of your Call Spread.")
-    mode_label = "CALL SPREADS"
 
 # --- MAIN PAGE: HEADER ---
 col1, col2 = st.columns([1, 6])
@@ -87,6 +58,41 @@ st.markdown(
 st.markdown("""
 Calculate your exact portfolio risk and find out how many put options you need to hedge against a market crash.
 """)
+
+st.markdown("---")
+
+# --- NEW: HEDGING PARAMETERS (Moved from Sidebar to Main Page) ---
+st.subheader("⚙️ Hedging Parameters")
+
+# The Subscriber-Only Gate
+with st.expander("🔐 Unlock Advanced Strategies"):
+    passcode = st.text_input("Enter Subscriber Passcode", type="password")
+    if passcode == "NIFTY2026": 
+        st.success("Advanced Mode Active!")
+        hedge_mode = st.radio("Hedge Strategy", ["Buy Puts (Insurance)", "Sell Call Spreads (Income)"])
+    else:
+        st.info("Advanced strategies are locked. Watch the video to find the code!")
+        hedge_mode = "Buy Puts (Insurance)"
+
+# Using 3 columns so the inputs look compact and professional on Desktop, but stack neatly on Mobile
+param_col1, param_col2, param_col3 = st.columns(3)
+
+with param_col1:
+    index_symbol = st.text_input("Index Symbol", value="^NSEI", help="^NSEI is Nifty 50")
+with param_col2:
+    lot_size = st.number_input("Index Lot Size", value=50, step=1)
+with param_col3:
+    if hedge_mode == "Buy Puts (Insurance)":
+        target_delta = st.number_input("Target Put Delta", value=0.20, step=0.05, help="0.20 is a standard OTM Put.")
+        mode_label = "PUTS"
+    else:
+        target_delta = st.number_input("Net Strategy Delta", value=0.25, step=0.05, help="The net delta of your Call Spread.")
+        mode_label = "CALL SPREADS"
+
+st.markdown("---")
+
+# --- MAIN PAGE: PORTFOLIO INPUT ---
+st.subheader("Step 1: Enter Your Portfolio")
 
 # --- CORE LOGIC ---
 @st.cache_data(ttl=3600)
