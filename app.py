@@ -10,26 +10,23 @@ st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", l
 # --- HIDE STREAMLIT BRANDING & GITHUB LINK ---
 hide_st_style = """
             <style>
-            /* 1. Hide the specific toolbar containing the GitHub link, Fork, and Menu */
+            /* 1. Hide the right-side toolbar (GitHub, Menu) but keep the header intact */
             [data-testid="stToolbar"] {visibility: hidden !important;}
-            [data-testid="stHeaderActionElements"] {display: none !important;}
-            .stAppToolbar {display: none !important;}
             
-            /* 2. Hide the default Streamlit footer */
+            /* 2. EXPLICITLY force the mobile sidebar toggle to remain visible */
+            [data-testid="collapsedControl"] {visibility: visible !important; display: block !important; z-index: 99999 !important;}
+            
+            /* 3. Hide the default Streamlit footer */
             footer {display: none !important;}
             
-            /* 3. Hide the bottom-right Streamlit Cloud Logo/Badge */
+            /* 4. Hide the bottom-right Streamlit Cloud Logo/Badge */
             .viewerBadge_container {display: none !important;}
             .viewerBadge_link {display: none !important;}
             [data-testid="stViewerBadge"] {display: none !important;}
             
-            /* 4. Hide floating Manage App / Deploy buttons */
+            /* 5. Hide floating Manage App / Deploy buttons */
             [data-testid="stAppDeployButton"] {display: none !important;}
             [data-testid="manage-app-button"] {display: none !important;}
-            
-            /* 5. Bruteforce fallback for standard Streamlit cloud links */
-            a[href*="streamlit.io"] {display: none !important;}
-            iframe[src*="streamlit"] {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
