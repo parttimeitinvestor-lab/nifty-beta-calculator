@@ -10,30 +10,23 @@ st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", l
 # --- HIDE STREAMLIT BRANDING & GITHUB LINK ---
 hide_st_style = """
             <style>
-            /* 1. Hide the specific toolbar containing the GitHub link, Fork, and Menu */
-            [data-testid="stToolbar"] {visibility: hidden !important;}
-            [data-testid="stHeaderActionElements"] {display: none !important;}
-            .stAppToolbar {display: none !important;}
+            /* 1. Hide ONLY the GitHub/Menu toolbar. Leave the main header alone! */
+            [data-testid="stToolbar"] {display: none !important;}
             
-            /* 2. Hide the default Streamlit footer */
-            footer {display: none !important;}
-            
-            /* 3. Hide the bottom-right Streamlit Cloud Logo/Badge */
-            .viewerBadge_container {display: none !important;}
-            .viewerBadge_link {display: none !important;}
-            [data-testid="stViewerBadge"] {display: none !important;}
-            
-            /* 4. Hide floating Manage App / Deploy buttons */
+            /* 2. Hide the Deploy and Manage App buttons */
             [data-testid="stAppDeployButton"] {display: none !important;}
             [data-testid="manage-app-button"] {display: none !important;}
             
-            /* 5. Bruteforce fallback for standard Streamlit cloud links */
-            a[href*="streamlit.io"] {display: none !important;}
-            iframe[src*="streamlit"] {display: none !important;}
+            /* 3. Hide the default Streamlit footer */
+            footer {display: none !important;}
+            
+            /* 4. Hide the bottom-right Streamlit Cloud Logo/Badge */
+            .viewerBadge_container {display: none !important;}
+            .viewerBadge_link {display: none !important;}
+            [data-testid="stViewerBadge"] {display: none !important;}
             </style>
             """
 st.markdown(hide_st_style, unsafe_allow_html=True)
-
 
 # --- SIDEBAR: PARAMETERS ---
 #st.sidebar.header("Hedging Parameters")
