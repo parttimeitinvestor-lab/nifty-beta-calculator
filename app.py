@@ -95,12 +95,12 @@ st.markdown("---")
 #st.subheader("Step 1: Enter Your Portfolio")
 
 # --- CORE LOGIC ---
-@st.cache_data(ttl=3600)
+@st.cache_data(ttl=300) # Fix 1: Cache refreshes every 5 mins instead of 1 hour
 def fetch_yf_data(ticker, days=365):
-    end_date = datetime.date.today()
-    start_date = end_date - datetime.timedelta(days=days)
     try:
-        data = yf.download(ticker, start=start_date, end=end_date, progress=False)
+        # Fix 2: Use period="1y" to force the library to grab today's live intraday price
+        data = yf.download(ticker, period="1y", progress=False)
+        
         if data is None or data.empty:
             return pd.Series(dtype=float)
         
@@ -108,10 +108,12 @@ def fetch_yf_data(ticker, days=365):
         closes = data['Close']
         if isinstance(closes, pd.DataFrame):
             closes = closes.iloc[:, 0]
-        return pd.Series(closes)
+            
+        # Fix 3: Drop NaNs just in case the live intraday candle hasn't fully formed
+        return pd.Series(closes).dropna()
+        
     except Exception:
         return pd.Series(dtype=float)
-
 # --- NIFTY 50 LIST ---
 nifty50_symbols = [
     "ADANIENT", "ADANIPORTS", "APOLLOHOSP", "ASIANPAINT", "AXISBANK",
