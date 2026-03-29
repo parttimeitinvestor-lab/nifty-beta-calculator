@@ -1,4 +1,5 @@
 import streamlit as st
+import requests
 import yfinance as yf
 import pandas as pd
 import numpy as np
@@ -95,24 +96,37 @@ st.markdown("---")
 #st.subheader("Step 1: Enter Your Portfolio")
 
 # --- CORE LOGIC ---
-@st.cache_data(ttl=300) # Fix 1: Cache refreshes every 5 mins instead of 1 hour
+@st.cache_data(ttl=300)
 def fetch_yf_data(ticker, days=365):
     try:
-        # Fix 2: Use period="1y" to force the library to grab today's live intraday price
-        data = yf.download(ticker, period="1y", progress=False)
+        # 1. Create a custom session to bypass Yahoo's bot protection
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
+        })
+        
+        # 2. Pass the custom session to yfinance
+        data = yf.download(ticker, period="1y", progress=False, session=session)
         
         if data is None or data.empty:
             return pd.Series(dtype=float)
         
-        # Safely extract close prices to avoid single-day array crashes
-        closes = data['Close']
+        # 3. Robust extraction (yfinance sometimes changes column structures)
+        if 'Close' in data.columns:
+            closes = data['Close']
+        elif 'close' in data.columns:
+            closes = data['close']
+        else:
+            closes = data.iloc[:, 3] # Fallback to the 4th column
+            
         if isinstance(closes, pd.DataFrame):
             closes = closes.iloc[:, 0]
             
-        # Fix 3: Drop NaNs just in case the live intraday candle hasn't fully formed
         return pd.Series(closes).dropna()
         
-    except Exception:
+    except Exception as e:
+        # If it fails again, this will print the actual error to your Streamlit terminal so we can debug it
+        print(f"YFinance Error for {ticker}: {e}") 
         return pd.Series(dtype=float)
 # --- NIFTY 50 LIST ---
 nifty50_symbols = [
