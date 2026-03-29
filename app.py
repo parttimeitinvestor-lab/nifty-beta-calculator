@@ -8,26 +8,7 @@ import datetime
 # --- PAGE CONFIG ---
 st.set_page_config(page_title="Beta Hedge Calculator | Part Time IT Investor", layout="wide", page_icon="📈")
 
-# --- HIDE STREAMLIT BRANDING & GITHUB LINK ---
-hide_st_style = """
-            <style>
-            /* 1. Target ONLY the GitHub link in the header and hide it */
-            header a[href*="github.com"] {display: none !important;}
-            
-            /* 2. Hide the 'Fork' and 'Star' toolbar if it appears */
-            [data-testid="stToolbar"] {display: none !important;}
 
-            /* 3. Hide the Deploy and Manage buttons */
-            [data-testid="stAppDeployButton"] {display: none !important;}
-            [data-testid="manage-app-button"] {display: none !important;}
-            
-            /* 4. Hide the standard footer and viewer badge */
-            footer {display: none !important;}
-            [data-testid="stViewerBadge"] {display: none !important;}
-            .viewerBadge_container {display: none !important;}
-            </style>
-            """
-st.markdown(hide_st_style, unsafe_allow_html=True)
 
 
 # --- MAIN PAGE: HEADER ---
