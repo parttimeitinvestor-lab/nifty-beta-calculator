@@ -80,32 +80,22 @@ st.markdown("---")
 @st.cache_data(ttl=300)
 def fetch_yf_data(ticker, days=365):
     try:
-        # 1. Create a custom session to bypass Yahoo's bot protection
-        session = requests.Session()
-        session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36'
-        })
+        # Switch from download() to Ticker().history() to bypass the main firewall
+        tkr = yf.Ticker(ticker)
+        data = tkr.history(period="1y")
         
-        # 2. Pass the custom session to yfinance
-        data = yf.download(ticker, period="1y", progress=False, session=session)
-        
+        # If Yahoo still blocks us, data will be empty
         if data is None or data.empty:
             return pd.Series(dtype=float)
-        
-        # 3. Robust extraction (yfinance sometimes changes column structures)
-        if 'Close' in data.columns:
-            closes = data['Close']
-        elif 'close' in data.columns:
-            closes = data['close']
-        else:
-            closes = data.iloc[:, 3] # Fallback to the 4th column
             
-        if isinstance(closes, pd.DataFrame):
-            closes = closes.iloc[:, 0]
-            
+        # Ticker().history() always returns a clean 'Close' column
+        closes = data['Close']
         return pd.Series(closes).dropna()
         
     except Exception as e:
+        # If it breaks, print the exact raw Python error to the UI so we can see it
+        st.error(f"🚨 DEBUG ERROR for {ticker}: {str(e)}")
+        return pd.Series(dtype=float)
         # If it fails again, this will print the actual error to your Streamlit terminal so we can debug it
         print(f"YFinance Error for {ticker}: {e}") 
         return pd.Series(dtype=float)
